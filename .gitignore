@@ -1,0 +1,5 @@
+platforms/
+node_modules/
+bower_components/
+serve/
+.DS_Store
