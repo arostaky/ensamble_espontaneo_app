@@ -21,13 +21,15 @@
         "glob": "^5.0.15",
         "npm": "^2.15.12",
         "plist": "^1.2.0",
-        "q": "^1.5.1"
+        "q": "^1.5.1",
+        "wifiwizard": "^0.2.11"
     },
     "cordova": {
         "plugins": {
             "cordova-plugin-whitelist": {},
             "cordova-plugin-browsersync": {},
-            "cordova-plugin-gyroscope": {}
+            "cordova-plugin-gyroscope": {},
+            "com.pylonproducts.wifiwizard": {}
         },
         "platforms": [
             "android"

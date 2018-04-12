@@ -28,6 +28,8 @@ var app = {
     // 'pause', 'resume', etc.
     onDeviceReady: function() {
         this.receivedEvent('deviceready');
+        console.log('device is ready run gyroscope');
+        navigator.gyroscope.watch(onSuccess, onError, options);
     },
 
     // Update DOM on a Received Event
@@ -59,32 +61,24 @@ function OnOff() {
     xmlhttp.send();
 }
 
-function newOnoff() {
-    var request;
-    if (request) {
-        return;
-    }
-    request = $.ajax({
-        url: 'http://192.168.4.1/LED=ONOFF/',
-        data: {},
-        type: 'GET',
-        cache: false,
-        crossDomain: true,
-        timeout: 3000, //3 second timeout
-        beforeSend: function() {
-            console.log('sending request');
-        },
-        success: function(data) {
-            console.log(data);
-            console.log('success!');
-            $('#alert').fadeIn();
-        },
-        error: function(xhr, textStatus, errorThrown) {
-            alert('Error de conexión');
-            console.log('error!');
-        }
-    });
-    return request;
+var options = { frequency: 100 }; // Update every 3 seconds
+
+//var watchID = navigator.gyroscope.watchAngularSpeed(onSuccess, onError, options);
+
+function onSuccess(speed) {
+    // alert('AngularSpeed:\n' +
+    //     'x: ' + speed.x + '\n' +
+    //     'y: ' + speed.y + '\n' +
+    //     'z: ' + speed.z + '\n' +
+    //     'Timestamp: ' + speed.timestamp + '\n');
+    $('#gx').html(speed.x);
+    $('#gy').html(speed.y);
+    $('#gz').html(speed.z);
+
+}
+
+function onError() {
+    alert('onError!');
 }
 $(document).ready(function() {
     $('#wifi').click(function() {
@@ -161,6 +155,5 @@ $(document).ready(function() {
     $('#onoff input').on('click', function() {
         newOnoff();
     });
-    var gyroscope = navigator.gyroscope;
-    console.log('gyroscope get current: ' + gyroscope.getCurrent);
+
 });
