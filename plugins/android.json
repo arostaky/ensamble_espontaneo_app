@@ -12,6 +12,9 @@
     },
     "cordova-plugin-browsersync": {
       "PACKAGE_NAME": "com.acrovia.ensambleapp"
+    },
+    "cordova-plugin-gyroscope": {
+      "PACKAGE_NAME": "com.acrovia.ensambleapp"
     }
   },
   "dependent_plugins": {}
