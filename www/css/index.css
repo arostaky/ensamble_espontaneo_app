@@ -76,3 +76,63 @@ input:checked+.slider:before {
 .slider.round:before {
     border-radius: 50%;
 }
+
+.hexagon {
+    position: relative;
+    display: inline-block;
+    overflow: hidden;
+    margin: 0 8.5%;
+    /*padding: 60% 30%;*/
+    height: 400px;
+    width: 175px;
+    /* transform: rotate(30deg) skewY(30deg) scaleX(.866); */
+    transform: scaleX(.8)scaleY(.4)rotate(90deg);
+    /* background: red; */
+    position: absolute;
+    top: -150px;
+}
+
+.hexagon:before,
+.content:after {
+    display: block;
+    position: absolute;
+    top: 50px;
+    right: 0;
+    bottom: 50px;
+    left: 0;
+    transform: scaleX(3.155) skewY(-30deg) rotate(-30deg);
+    background: linear-gradient(30deg, rgb(58, 154, 229), rgb(82, 224, 224));
+    background-size: cover;
+    content: '';
+}
+
+.newcol {
+    top: -130px
+}
+
+.newcol:before,
+.content:after {
+    background: linear-gradient(30deg, rgba(240, 27, 78, 1), rgb(224, 82, 167));
+}
+
+.shifted {
+    top: -115px;
+    left: 20px;
+}
+
+.shifted:before {
+    background: linear-gradient(30deg, rgba(58, 154, 229, 0.43), rgba(82, 224, 196, 0.79));
+    background-blend-mode: multiply;
+}
+
+#mainpage {
+    min-height: 100%;
+    height: 100%;
+    /* height: 100%; */
+    /* background-color: rgba(0, 0, 0, .3); */
+}
+
+canvas {
+    width: 100%;
+    height: auto;
+}

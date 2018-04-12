@@ -26,6 +26,8 @@
     <plugin name="cordova-plugin-browsersync" spec="^1.1.0" />
     <plugin name="cordova-plugin-gyroscope" spec="^0.1.4" />
     <preference name="orientation" value="portrait" />
+    <preference name="Fullscreen" value="true" />
     <plugin name="com.pylonproducts.wifiwizard" spec="~0.2.11" />
+    <plugin name="cordova-plugin-device-motion" spec="^1.2.5" />
     <engine name="android" spec="^7.0.0" />
 </widget>

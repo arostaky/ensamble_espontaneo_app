@@ -18,6 +18,9 @@
     },
     "com.pylonproducts.wifiwizard": {
       "PACKAGE_NAME": "com.acrovia.ensambleapp"
+    },
+    "cordova-plugin-device-motion": {
+      "PACKAGE_NAME": "com.acrovia.ensambleapp"
     }
   },
   "dependent_plugins": {}

@@ -29,7 +29,8 @@ var app = {
     onDeviceReady: function() {
         this.receivedEvent('deviceready');
         console.log('device is ready run gyroscope');
-        navigator.gyroscope.watch(onSuccess, onError, options);
+        startWatch();
+        //navigator.gyroscope.watch(onSuccess, onError, options);
     },
 
     // Update DOM on a Received Event
@@ -46,114 +47,195 @@ var app = {
 };
 app.initialize();
 
-function OnOff() {
-    var xmlhttp = new XMLHttpRequest();
-    xmlhttp.addEventListener("readystatechange", function() {
-        // console.log(this.readyState);
-        if (this.readyState === 4) {
-            $('#alert').fadeIn();
-        }
-        if (this.readyState === 404) {
-            alert('Error de conexión');
-        }
-    });
-    xmlhttp.open("GET", "http://192.168.4.1/LED=ONOFF");
-    xmlhttp.send();
+// function OnOff() {
+//     var xmlhttp = new XMLHttpRequest();
+//     xmlhttp.addEventListener("readystatechange", function() {
+//         // console.log(this.readyState);
+//         if (this.readyState === 4) {
+//             $('#alert').fadeIn();
+//         }
+//         if (this.readyState === 404) {
+//             alert('Error de conexión');
+//         }
+//     });
+//     xmlhttp.open("GET", "http://192.168.4.1/LED=ONOFF");
+//     xmlhttp.send();
+// }
+
+var options = { frequency: 300 }; // Update every 3 seconds
+var canvas = document.getElementById('canvas'),
+    xmax = document.getElementById("canvas").getAttribute("width"),
+    ymax = document.getElementById("canvas").getAttribute("height"),
+    context = canvas.getContext('2d');
+var watchID = null;
+// Start watching the acceleration
+//
+function startWatch() {
+    // Update acceleration every 100 milliseconds
+    var options = { frequency: 100 };
+    watchID = navigator.accelerometer.watchAcceleration(onSuccess, onError, options);
 }
-
-var options = { frequency: 100 }; // Update every 3 seconds
-
-//var watchID = navigator.gyroscope.watchAngularSpeed(onSuccess, onError, options);
-
-function onSuccess(speed) {
-    // alert('AngularSpeed:\n' +
-    //     'x: ' + speed.x + '\n' +
-    //     'y: ' + speed.y + '\n' +
-    //     'z: ' + speed.z + '\n' +
-    //     'Timestamp: ' + speed.timestamp + '\n');
-    $('#gx').html(speed.x);
-    $('#gy').html(speed.y);
-    $('#gz').html(speed.z);
-
+// Stop watching the acceleration
+//
+function stopWatch() {
+    if (watchID) {
+        navigator.accelerometer.clearWatch(watchID);
+        watchID = null;
+    }
 }
-
+// onSuccess: Get a snapshot of the current acceleration
+//
+function onSuccess(acceleration) {
+    var element = document.getElementById('accelerometer');
+    element.innerHTML = 'Acceleration X: ' + acceleration.x + '<br />' +
+        'Acceleration Y: ' + acceleration.y + '<br />' +
+        'Acceleration Z: ' + acceleration.z;
+    // draw the instantaneous acceleration vector on screen
+    drawArrow(acceleration.x, acceleration.y, acceleration.z);
+}
+// onError: Failed to get the acceleration
+//
 function onError() {
     alert('onError!');
 }
-$(document).ready(function() {
-    $('#wifi').click(function() {
-        try {
-            WifiWizard.isWifiEnabled(win, fail);
-        } catch (err) {
-            alert("Plugin Error - " + err.message);
-        }
 
-    });
+function drawArrow(ax, ay, az) {
+    // paint canvas black
+    context.fillStyle = "black";
+    context.fillRect(0, 0, xmax, ymax);
+    // draw vertical centerline
+    context.beginPath();
+    context.moveTo(xmax / 2, 0);
+    context.lineTo(xmax / 2, ymax);
+    context.strokeStyle = "white";
+    context.lineWidth = 0.5;
+    context.stroke();
+    // draw horizontal centerline
+    context.beginPath();
+    context.moveTo(0, ymax / 2);
+    context.lineTo(xmax, ymax / 2);
+    context.strokeStyle = "white";
+    context.lineWidth = 0.5;
+    context.stroke();
+    // draw "X"
+    context.font = '20pt Arial';
+    context.lineWidth = 2;
+    context.strokeStyle = 'yellow';
+    context.strokeText("X", canvas.width / 2 + 120, canvas.height / 2 + 10);
+    // draw "Y"
+    context.font = '20pt Arial';
+    context.lineWidth = 2;
+    context.strokeStyle = 'yellow';
+    context.strokeText("Y", canvas.width / 2 - 10, 25);
+    // circe of gravitational acceleration
+    context.beginPath();
+    context.arc(xmax / 2, ymax / 2, 0.4 * xmax, 0, 2 * Math.PI, false);
+    context.strokeStyle = "blue";
+    context.lineWidth = 0.5;
+    context.stroke();
+    // draw yellow acceleration vector
+    context.beginPath();
+    context.moveTo(xmax / 2, ymax / 2);
+    context.lineTo(xmax / 2 + 0.4 * xmax * ax / 9.81, ymax / 2 - 0.4 * ymax * ay / 9.81);
+    context.strokeStyle = "yellow";
+    context.lineWidth = 5.0;
+    context.stroke();
+}
 
-    function win(e) {
-        if (e) {
-            alert("Wifi enabled already");
-        } else {
-            WifiWizard.setWifiEnabled(true, winEnable, failEnable);
-        }
+//var watchID = navigator.gyroscope.watchAngularSpeed(onSuccess, onError, options);
 
-    }
+// function onSuccess(speed) {
+//     // alert('AngularSpeed:\n' +
+//     //     'x: ' + speed.x + '\n' +
+//     //     'y: ' + speed.y + '\n' +
+//     //     'z: ' + speed.z + '\n' +
+//     //     'Timestamp: ' + speed.timestamp + '\n');
+//     $('#gx').html(speed.x);
+//     $('#gy').html(speed.y);
+//     $('#gz').html(speed.z);
+//     $('#mainpage').css('background-color', 'rgba(' + Math.round(speed.x) + ',' + Math.round(speed.y) + ',' + Math.round(speed.z) + ')');
+//     // $('.newcol').css('top', speed.x);
+//     // $('.shifted').css('top', speed.y);
 
-    function fail(e) {
-        alert("Error checking Wifi status");
-    }
+// }
 
-    function winEnable(e) {
-        alert("Wifi enabled successfully");
-    }
+// function onError() {
+//     alert('onError!');
+// }
+// $(document).ready(function() {
+//     $('#wifi').click(function() {
+//         try {
+//             WifiWizard.isWifiEnabled(win, fail);
+//         } catch (err) {
+//             alert("Plugin Error - " + err.message);
+//         }
 
-    function failEnable(e) {
-        alert("Error enabling Wifi ");
-    }
+//     });
 
-    $('#search').click(function() {
-        try {
-            WifiWizard.listNetworks(listHandler, fail);
-        } catch (err) {
-            alert("Plugin Error - " + err.message);
-        }
+//     function win(e) {
+//         if (e) {
+//             alert("Wifi enabled already");
+//         } else {
+//             WifiWizard.setWifiEnabled(true, winEnable, failEnable);
+//         }
 
-    });
+//     }
 
-    function listHandler(a) {
-        alert(a);
-    }
+//     function fail(e) {
+//         alert("Error checking Wifi status");
+//     }
 
-    $('#scan').click(function() {
-        try {
-            WifiWizard.getScanResults({ numLevels: 1 }, listHandler1, fail);
-        } catch (err) {
-            alert("Plugin Error - " + err.message);
-        }
+//     function winEnable(e) {
+//         alert("Wifi enabled successfully");
+//     }
 
-    });
+//     function failEnable(e) {
+//         alert("Error enabling Wifi ");
+//     }
 
-    function listHandler1(a) {
-        alert(JSON.stringify(a));
-    }
+//     $('#search').click(function() {
+//         try {
+//             WifiWizard.listNetworks(listHandler, fail);
+//         } catch (err) {
+//             alert("Plugin Error - " + err.message);
+//         }
 
-    $('#connect').click(function() {
-        try {
-            var config = WifiWizard.formatWPAConfig("Invitados", "invitado123");
-            WifiWizard.addNetwork(config, function() {
-                WifiWizard.connectNetwork("Invitados");
-            });
-        } catch (err) {
-            alert("Plugin Error - " + err.message);
-        }
+//     });
 
-    });
+//     function listHandler(a) {
+//         alert(a);
+//     }
 
-    function connectSuccess(e) {
-        alert("Connect success");
-    }
-    $('#onoff input').on('click', function() {
-        newOnoff();
-    });
+//     $('#scan').click(function() {
+//         try {
+//             WifiWizard.getScanResults({ numLevels: 1 }, listHandler1, fail);
+//         } catch (err) {
+//             alert("Plugin Error - " + err.message);
+//         }
 
-});
+//     });
+
+//     function listHandler1(a) {
+//         alert(JSON.stringify(a));
+//     }
+
+//     $('#connect').click(function() {
+//         try {
+//             var config = WifiWizard.formatWPAConfig("Invitados", "invitado123");
+//             WifiWizard.addNetwork(config, function() {
+//                 WifiWizard.connectNetwork("Invitados");
+//             });
+//         } catch (err) {
+//             alert("Plugin Error - " + err.message);
+//         }
+
+//     });
+
+//     function connectSuccess(e) {
+//         alert("Connect success");
+//     }
+//     $('#onoff input').on('click', function() {
+//         newOnoff();
+//     });
+
+// });
