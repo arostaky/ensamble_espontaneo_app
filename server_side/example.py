@@ -1,4 +1,5 @@
 from flask import Flask
+import os
 app = Flask(__name__)
 
 @app.route("/")
@@ -7,8 +8,8 @@ def index():
 
 @app.route("/message")
 def message():
-    // Handle your post message
-    return "Hello World!"
+    # Handle your post message
+    return "Hello Message!"
 
 
 if __name__ == "__main__":
