@@ -29,7 +29,7 @@ var app = {
     onDeviceReady: function() {
         this.receivedEvent('deviceready');
         console.log('device is ready run gyroscope');
-        startWatch();
+        //startWatch();
         //navigator.gyroscope.watch(onSuccess, onError, options);
     },
 
@@ -68,6 +68,7 @@ var canvas = document.getElementById('canvas'),
     ymax = document.getElementById("canvas").getAttribute("height"),
     context = canvas.getContext('2d');
 var watchID = null;
+var XX, YY, ZZ;
 // Start watching the acceleration
 //
 function startWatch() {
@@ -90,8 +91,14 @@ function onSuccess(acceleration) {
     element.innerHTML = 'Acceleration X: ' + acceleration.x + '<br />' +
         'Acceleration Y: ' + acceleration.y + '<br />' +
         'Acceleration Z: ' + acceleration.z;
+    XX = acceleration.x;
+    YY = acceleration.y;
+    ZZ = acceleration.z;
     // draw the instantaneous acceleration vector on screen
     drawArrow(acceleration.x, acceleration.y, acceleration.z);
+    socket.emit('my room event', { room: 'ensamble', data: XX + ' ' + YY + ' ' + ZZ });
+    // socket.emit('my room event', { room: 'ensamble', data: YY + ' ' });
+    // socket.emit('my room event', { room: 'ensamble', data: ZZ });
 }
 // onError: Failed to get the acceleration
 //
@@ -141,20 +148,54 @@ function drawArrow(ax, ay, az) {
     context.lineWidth = 5.0;
     context.stroke();
 }
-$(document).ready(function() {
-    namespace = '/test';
-    var socket = io.connect('http://192.168.0.159:5000');
+//$(document).ready(function() {
+var namespace = '/test';
+var socket = io.connect('http://192.168.0.159:5000' + namespace);
 
-    socket.on('connect', function() {
-        socket.emit('my event', { data: 'I\'m connected!' });
-    });
-    socket.on('disconnect', function() {
-        $('#log').append('<br>Disconnected');
-    });
-    socket.on('my response', function(msg) {
-        $('#log').append('<br>Received: ' + msg.data);
-    });
+socket.on('connect', function() {
+    socket.emit('my event', { data: 'I\'m connected!' });
 });
+socket.on('disconnect', function() {
+    $('#log').append('<br>Disconnected');
+});
+socket.on('my response', function(msg) {
+    $('#log').append('<br>Received: ' + msg.data);
+});
+$('#conectar').on('click', function(event) {
+    socket.emit('join', { room: 'ensamble' });
+});
+$('#hola').on('click', function(event) {
+    startWatch();
+});
+// $('form#emit').submit(function(event) {
+//     socket.emit('my event', { data: $('#emit_data').val() });
+//     return false;
+// });
+// $('form#broadcast').submit(function(event) {
+//     socket.emit('my broadcast event', { data: $('#broadcast_data').val() });
+//     return false;
+// });
+// $('form#join').submit(function(event) {
+//     socket.emit('join', { room: $('#join_room').val() });
+//     return false;
+// });
+// $('form#leave').submit(function(event) {
+//     socket.emit('leave', { room: $('#leave_room').val() });
+//     return false;
+// });
+// $('form#send_room').submit(function(event) {
+//     socket.emit('my room event', { room: $('#room_name').val(), data: $('#room_data').val() });
+//     return false;
+// });
+// $('form#close').submit(function(event) {
+//     socket.emit('close room', { room: $('#close_room').val() });
+//     return false;
+// });
+// $('form#disconnect').submit(function(event) {
+//     socket.emit('disconnect request');
+//     return false;
+// });
+//});
 //var watchID = navigator.gyroscope.watchAngularSpeed(onSuccess, onError, options);
 
 // function onSuccess(speed) {

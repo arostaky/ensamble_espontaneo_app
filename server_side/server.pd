@@ -1,0 +1,15 @@
+#N canvas 2136 -83 498 337 10;
+#X obj 98 125 route 0 1;
+#X obj 100 168 \$1;
+#X obj 140 168 \$1;
+#X msg 122 196 \; pd-\$1.pd menuclose;
+#X obj 192 126 print;
+#X msg 56 233 \; pd open \$1.pd /Users/jpdibacco/Projects/ensamble_espontaneo_app/server_side
+;
+#X obj 87 77 netreceive 3000;
+#X connect 0 0 1 0;
+#X connect 0 1 2 0;
+#X connect 1 0 5 0;
+#X connect 2 0 3 0;
+#X connect 6 0 0 0;
+#X connect 6 0 4 0;

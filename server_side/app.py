@@ -6,6 +6,7 @@ async_mode = None
 import time
 from flask import Flask, render_template
 import socketio
+import os
 
 sio = socketio.Server(logger=True, async_mode=async_mode)
 app = Flask(__name__)
@@ -69,6 +70,8 @@ def close(sid, message):
 def send_room_message(sid, message):
     sio.emit('my response', {'data': message['data']}, room=message['room'],
              namespace='/test')
+    #os.system("echo '0 " + str(message) + ";' | pdsend 3001 localhost udp")
+    os.system("echo '0 "+str(message['data'])+";' | /Applications/Pd-extended.app/Contents/Resources/bin/pdsend 3001 localhost udp")
 
 
 @sio.on('disconnect request', namespace='/test')
