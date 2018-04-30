@@ -141,7 +141,20 @@ function drawArrow(ax, ay, az) {
     context.lineWidth = 5.0;
     context.stroke();
 }
+$(document).ready(function() {
+    namespace = '/test';
+    var socket = io.connect('http://192.168.0.159:5000');
 
+    socket.on('connect', function() {
+        socket.emit('my event', { data: 'I\'m connected!' });
+    });
+    socket.on('disconnect', function() {
+        $('#log').append('<br>Disconnected');
+    });
+    socket.on('my response', function(msg) {
+        $('#log').append('<br>Received: ' + msg.data);
+    });
+});
 //var watchID = navigator.gyroscope.watchAngularSpeed(onSuccess, onError, options);
 
 // function onSuccess(speed) {
