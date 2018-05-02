@@ -27,8 +27,11 @@
     <plugin name="cordova-plugin-gyroscope" spec="^0.1.4" />
     <preference name="orientation" value="portrait" />
     <preference name="Fullscreen" value="true" />
-    <plugin name="com.pylonproducts.wifiwizard" spec="~0.2.11" />
     <plugin name="cordova-plugin-device-motion" spec="^1.2.5" />
+    <plugin name="com.pylonproducts.wifiwizard" spec="~0.2.11" />
+    <plugin name="cordova-plugin-webpack-transpiler" spec="^0.3.1">
+        <variable name="CONFIG" value="babel" />
+    </plugin>
     <engine name="android" spec="^7.0.0" />
     <engine name="browser" spec="^5.0.3" />
 </widget>

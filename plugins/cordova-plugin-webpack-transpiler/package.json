@@ -1,0 +1,93 @@
+{
+  "_from": "cordova-plugin-webpack-transpiler@0.3.1",
+  "_id": "cordova-plugin-webpack-transpiler@0.3.1",
+  "_inBundle": false,
+  "_integrity": "sha1-oTIY9/YaCRuOx06i3rj71jAxzvs=",
+  "_location": "/cordova-plugin-webpack-transpiler",
+  "_phantomChildren": {},
+  "_requested": {
+    "type": "version",
+    "registry": true,
+    "raw": "cordova-plugin-webpack-transpiler@0.3.1",
+    "name": "cordova-plugin-webpack-transpiler",
+    "escapedName": "cordova-plugin-webpack-transpiler",
+    "rawSpec": "0.3.1",
+    "saveSpec": null,
+    "fetchSpec": "0.3.1"
+  },
+  "_requiredBy": [
+    "#USER",
+    "/"
+  ],
+  "_resolved": "https://registry.npmjs.org/cordova-plugin-webpack-transpiler/-/cordova-plugin-webpack-transpiler-0.3.1.tgz",
+  "_shasum": "a13218f7f61a091b8ec74ea2deb8fbd63031cefb",
+  "_spec": "cordova-plugin-webpack-transpiler@0.3.1",
+  "_where": "/Users/jpdibacco/Projects/ensamble_espontaneo_app",
+  "author": {
+    "name": "Kerri Shotts",
+    "url": "kerrishotts@gmail.com"
+  },
+  "bugs": {
+    "url": "https://github.com/kerrishotts/cordova-plugin-webpack-transpiler/issues"
+  },
+  "bundleDependencies": false,
+  "cordova": {
+    "id": "cordova-plugin-webpack-transpiler",
+    "platforms": [
+      "ios",
+      "osx",
+      "windows",
+      "wp8",
+      "android",
+      "ubuntu",
+      "blackberry10",
+      "browser"
+    ]
+  },
+  "deprecated": false,
+  "description": "Transpile and bundle with WebPack",
+  "devDependencies": {
+    "chai": "^3.5.0",
+    "mocha": "^3.2.0",
+    "shelljs": "^0.7.6",
+    "tree-directory": "^0.1.0"
+  },
+  "engines": {
+    "cordovaDependencies": {
+      "0.1.0": {
+        "cordova": ">= 6.0.0"
+      }
+    },
+    "node": ">= 5.0.0"
+  },
+  "homepage": "https://github.com/kerrishotts/cordova-plugin-webpack-transpiler#readme",
+  "keywords": [
+    "cordova",
+    "babel",
+    "transpile",
+    "typescript",
+    "webpack",
+    "es2015",
+    "es6",
+    "scss",
+    "ecosystem:cordova",
+    "cordova-ios",
+    "cordova-android",
+    "cordova-browser",
+    "cordova-ubuntu",
+    "cordova-windows",
+    "cordova-wp8",
+    "cordova-osx",
+    "cordova-blackberry10"
+  ],
+  "license": "Apache-2.0",
+  "name": "cordova-plugin-webpack-transpiler",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kerrishotts/cordova-plugin-webpack-transpiler.git"
+  },
+  "scripts": {
+    "test": "mocha"
+  },
+  "version": "0.3.1"
+}
