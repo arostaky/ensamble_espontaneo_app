@@ -1,4 +1,5 @@
-var container, stats, camera, scene, renderer, group, particle, mouseX = 0,
+var container, stats, camera, scene, renderer, group, particle = [],
+    mouseX = 0,
     mouseY = 0,
     windowHalfX = window.innerWidth / 2,
     windowHalfY = window.innerHeight / 2,
@@ -10,7 +11,7 @@ var container, stats, camera, scene, renderer, group, particle, mouseX = 0,
     accY = 2,
     accZ = 3,
     countmsg = 1,
-    material, program;
+    material, program, mysid, othersid = new Set([]);
 var app = {
     // Application Constructor
     initialize: function() {
@@ -45,7 +46,7 @@ app.initialize();
 //
 function startWatch() {
     // Update acceleration every 100 milliseconds
-    var options = { frequency: 250 };
+    var options = { frequency: 100 };
     watchID = navigator.accelerometer.watchAcceleration(onSuccess, onError, options);
 }
 // Stop watching the acceleration
@@ -87,9 +88,10 @@ function init() {
     group = new THREE.Group();
     scene.add(group);
     for (var i = 0; i < 5; i++) {
-        console.log('creating balls!');
+        //console.log('creating balls!');
         material = new THREE.SpriteCanvasMaterial({
             color: Math.random() * 0x808008 + 0x808080,
+            sort: true,
             program: program
         });
         particle = new THREE.Sprite(material);
@@ -111,47 +113,57 @@ function init() {
 }
 
 function updateBalls(valX, valY, valZ) {
-    console.log('balls added!');
-    var PI2 = Math.PI * 2;
-    program = function(context) {
-        context.beginPath();
-        context.arc(0, 0, 0.5, 0, PI2, true);
-        context.fill();
-    };
-    material = new THREE.SpriteCanvasMaterial({
-        color: Math.random() * 0x808008 + 0x808080,
-        program: program
-    });
-    particle = new THREE.Sprite(material);
-    particle.position.x = Math.round(valX) * 2000 - 1000;
-    particle.position.y = Math.round(valY) * 2000 - 1000;
-    particle.position.z = Math.round(valZ) * 2000 - 1000;
-    particle.scale.x = particle.scale.y = Math.random() * 20 + 10;
-    group.add(particle);
-    if (countmsg > 250) {
-        group.remove(particle);
-        countmsg = 50;
-        console.log('mas de 250');
+    if (countmsg < 200) {
+        //console.log('balls added!');
+        var PI2 = Math.PI * 2;
+        program = function(context) {
+            context.beginPath();
+            context.arc(0, 0, 0.5, 0, PI2, true);
+            context.fill();
+        };
+        material = new THREE.SpriteCanvasMaterial({
+            color: Math.random() * 0x808008 + 0x808080,
+            program: program
+        });
+        particle = new THREE.Sprite(material);
+        particle.position.x = Math.random() * 2000 - 500;
+        particle.position.y = Math.random() * 2000 - 500;
+        particle.position.z = Math.random() * 2000 - 500;
+        particle.scale.x = particle.scale.y = Math.random() * 20 + 10;
+        group.add(particle);
+    } else {
+        //moveBalls(valX, valY, valZ);
     }
 }
 
-//document.addEventListener('mousemove', onDocumentMouseMove, false);
+function moveBalls(valX, valY, valZ) {
+    group.scale.x = valX;
+    group.scale.y = valY;
+}
 
-//
-//window.addEventListener('resize', onWindowResize, false);
-
-// function onWindowResize() {
-//     windowHalfX = window.innerWidth / 2;
-//     windowHalfY = window.innerHeight / 2;
-//     camera.aspect = window.innerWidth / window.innerHeight;
-//     camera.updateProjectionMatrix();
-//     renderer.setSize(window.innerWidth, window.innerHeight);
-// }
-//
-// function onDocumentMouseMove(event) {
-//     mouseX = event.clientX - windowHalfX;
-//     mouseY = event.clientY - windowHalfY;
-// }
+function otherBalls(valX, valY, valZ) {
+    if (countmsg < 1) {
+        //console.log('balls added!');
+        var PI2 = Math.PI * 2;
+        program = function(context) {
+            context.beginPath();
+            context.arc(0, 0, 0.5, 0, PI2, true);
+            context.fill();
+        };
+        material = new THREE.SpriteCanvasMaterial({
+            color: Math.random() * 0x808008 + 0x808080,
+            program: program
+        });
+        particle = new THREE.Sprite(material);
+        particle.position.x = Math.random() * 2000 - 500;
+        particle.position.y = Math.random() * 2000 - 500;
+        particle.position.z = Math.random() * 2000 - 500;
+        particle.scale.x = particle.scale.y = Math.random() * 200 + 100;
+        group.add(particle);
+    } else {
+        group.position.x = valX;
+    }
+}
 
 function onDocumentTouchStart(event) {
     if (event.touches.length === 1) {
@@ -181,8 +193,10 @@ function render() {
     camera.position.x += (Math.round(XX) - camera.position.x) * 0.05;
     camera.position.y += (-Math.round(YY) - camera.position.y) * 0.05;
     camera.lookAt(scene.position);
-    group.rotation.x += 0.01;
-    group.rotation.y += 0.02;
+    group.rotation.x += XX / 1000;
+    group.rotation.y += YY / 1000;
+    group.position.x = XX / 500;
+    group.position.y = YY / 500;
     renderer.render(scene, camera);
 }
 
@@ -199,21 +213,54 @@ socket.on('disconnect', function() {
     $('#log').append('<br>Disconnected');
 });
 socket.on('my response', function(msg) {
-    $('#log').append('<br>Received: ' + msg.data);
+    // $('#log').append('<br>Received: ' + msg.data);
     //console.log('countmsg: ' + countmsg);
 
+});
+socket.on('joinroom', function(val) {
+    //console.log('sid: ' + JSON.stringify(val.sid));
+    mysid = val.sid;
 });
 socket.on('ensamble', function(msg) {
     //$('#log').append('<br>Received: ' + msg.data);
     countmsg++;
-    //updateMatrix(XX, YY, ZZ);
+    updateBalls(XX, YY, ZZ);
+    //console.log('data XYZ: ' + JSON.stringify(msg.data));
+    //console.log('sid' + JSON.stringify(msg.sid));
+    if (mysid != msg.sid) {
+        var msgsid = msg.sid;
+        var msgdata = msg.data;
+        var otherdata = { msgsid: msgsid, msgdata: msgdata }
+        othersid.add(otherdata);
+        console.log('othersid: ' + JSON.stringify(othersid));
+        for (var item of othersid) console.log('othersid:' + item);
+        // console.log('msgid othersid: ' + item.msgsid);
+        // console.log('data othersid: ' + item.msgdata);
+        var alldataballs = item.msgdata;
+        alldataballs = alldataballs.split(' ');
+        console.log('data for ballsX:' + alldataballs[0]);
+        console.log('data for ballsY:' + alldataballs[1]);
+        // othersid.forEach(function(value) {
+        //     var alldataballs = value.msgdata;
+        //     alldataballs = alldataballs.split(' ');
+        //     console.log('data for ballsX:' + alldataballs[0]);
+        //     console.log('data for ballsY:' + alldataballs[1]);
+        //     //otherBalls()
+        //     //$('#log').append('<br>here: ' + value);
+        //     //$('#log').append('<br>move: ' + value);
+        // });
+        // for (let i = 0; i < othersid.size; i++) {
+        //     console.log('othersid ids:' + othersid[i]);
+        // }
+    }
+
 });
 // $('#conectar').on('click', function(event) {
 //     socket.emit('join', { room: 'ensamble' });
 // });
 $('#hola').on('click', function(event) {
     socket.emit('join', { room: 'ensamble' });
-    //startWatch();
+    startWatch();
 });
 init();
 animate();

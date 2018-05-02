@@ -47,7 +47,7 @@ def test_broadcast_message(sid, message):
 @sio.on('join', namespace='/test')
 def join(sid, message):
     sio.enter_room(sid, message['room'], namespace='/test')
-    sio.emit('my response', {'data': 'Entered room: ' + message['room']},
+    sio.emit('joinroom', {'sid': sid},
              room=sid, namespace='/test')
 
 
@@ -68,7 +68,7 @@ def close(sid, message):
 
 @sio.on('my room event', namespace='/test')
 def send_room_message(sid, message):
-    sio.emit('ensamble', {'data': message['data']}, room=message['room'],
+    sio.emit('ensamble', {'data': message['data'], 'sid':sid}, room=message['room'],
              namespace='/test')
     #os.system("echo '0 " + str(message) + ";' | pdsend 3001 localhost udp")
     os.system("echo '0 "+str(message['data'])+";' | /Applications/Pd-extended.app/Contents/Resources/bin/pdsend 3001 localhost udp")
