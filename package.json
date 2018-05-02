@@ -10,9 +10,10 @@
     "author": "Apache Cordova Team",
     "license": "Apache-2.0",
     "dependencies": {
-        "browser-sync": "^2.23.6",
+        "browser-sync": "^2.24.1",
         "cheerio": "^0.19.0",
         "cordova-android": "^7.0.0",
+        "cordova-browser": "^5.0.3",
         "cordova-plugin-browsersync": "^1.1.0",
         "cordova-plugin-device-motion": "^1.2.5",
         "cordova-plugin-gyroscope": "^0.1.4",
@@ -23,7 +24,8 @@
         "npm": "^2.15.12",
         "plist": "^1.2.0",
         "q": "^1.5.1",
-        "wifiwizard": "^0.2.11"
+        "wifiwizard": "^0.2.11",
+        "com.pylonproducts.wifiwizard": "~0.2.11"
     },
     "cordova": {
         "plugins": {
@@ -34,7 +36,8 @@
             "cordova-plugin-device-motion": {}
         },
         "platforms": [
-            "android"
+            "android",
+            "browser"
         ]
     }
 }

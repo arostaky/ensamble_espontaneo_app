@@ -1,21 +1,16 @@
-/*
- * Licensed to the Apache Software Foundation (ASF) under one
- * or more contributor license agreements.  See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership.  The ASF licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations
- * under the License.
- */
+var container, stats, camera, scene, renderer, group, particle, mouseX = 0,
+    mouseY = 0,
+    windowHalfX = window.innerWidth / 2,
+    windowHalfY = window.innerHeight / 2,
+    watchID = null,
+    XX = 0,
+    YY = 0,
+    ZZ = 0,
+    accX = 1,
+    accY = 2,
+    accZ = 3,
+    countmsg = 1,
+    material, program;
 var app = {
     // Application Constructor
     initialize: function() {
@@ -28,7 +23,7 @@ var app = {
     // 'pause', 'resume', etc.
     onDeviceReady: function() {
         this.receivedEvent('deviceready');
-        console.log('device is ready run gyroscope');
+        console.log('device is ready');
         //startWatch();
         //navigator.gyroscope.watch(onSuccess, onError, options);
     },
@@ -46,34 +41,11 @@ var app = {
     }
 };
 app.initialize();
-
-// function OnOff() {
-//     var xmlhttp = new XMLHttpRequest();
-//     xmlhttp.addEventListener("readystatechange", function() {
-//         // console.log(this.readyState);
-//         if (this.readyState === 4) {
-//             $('#alert').fadeIn();
-//         }
-//         if (this.readyState === 404) {
-//             alert('Error de conexión');
-//         }
-//     });
-//     xmlhttp.open("GET", "http://192.168.4.1/LED=ONOFF");
-//     xmlhttp.send();
-// }
-
-var options = { frequency: 300 }; // Update every 3 seconds
-var canvas = document.getElementById('canvas'),
-    xmax = document.getElementById("canvas").getAttribute("width"),
-    ymax = document.getElementById("canvas").getAttribute("height"),
-    context = canvas.getContext('2d');
-var watchID = null;
-var XX, YY, ZZ;
 // Start watching the acceleration
 //
 function startWatch() {
     // Update acceleration every 100 milliseconds
-    var options = { frequency: 100 };
+    var options = { frequency: 250 };
     watchID = navigator.accelerometer.watchAcceleration(onSuccess, onError, options);
 }
 // Stop watching the acceleration
@@ -87,18 +59,11 @@ function stopWatch() {
 // onSuccess: Get a snapshot of the current acceleration
 //
 function onSuccess(acceleration) {
-    var element = document.getElementById('accelerometer');
-    element.innerHTML = 'Acceleration X: ' + acceleration.x + '<br />' +
-        'Acceleration Y: ' + acceleration.y + '<br />' +
-        'Acceleration Z: ' + acceleration.z;
+
     XX = acceleration.x;
     YY = acceleration.y;
     ZZ = acceleration.z;
-    // draw the instantaneous acceleration vector on screen
-    drawArrow(acceleration.x, acceleration.y, acceleration.z);
     socket.emit('my room event', { room: 'ensamble', data: XX + ' ' + YY + ' ' + ZZ });
-    // socket.emit('my room event', { room: 'ensamble', data: YY + ' ' });
-    // socket.emit('my room event', { room: 'ensamble', data: ZZ });
 }
 // onError: Failed to get the acceleration
 //
@@ -106,48 +71,123 @@ function onError() {
     alert('onError!');
 }
 
-function drawArrow(ax, ay, az) {
-    // paint canvas black
-    context.fillStyle = "black";
-    context.fillRect(0, 0, xmax, ymax);
-    // draw vertical centerline
-    context.beginPath();
-    context.moveTo(xmax / 2, 0);
-    context.lineTo(xmax / 2, ymax);
-    context.strokeStyle = "white";
-    context.lineWidth = 0.5;
-    context.stroke();
-    // draw horizontal centerline
-    context.beginPath();
-    context.moveTo(0, ymax / 2);
-    context.lineTo(xmax, ymax / 2);
-    context.strokeStyle = "white";
-    context.lineWidth = 0.5;
-    context.stroke();
-    // draw "X"
-    context.font = '20pt Arial';
-    context.lineWidth = 2;
-    context.strokeStyle = 'yellow';
-    context.strokeText("X", canvas.width / 2 + 120, canvas.height / 2 + 10);
-    // draw "Y"
-    context.font = '20pt Arial';
-    context.lineWidth = 2;
-    context.strokeStyle = 'yellow';
-    context.strokeText("Y", canvas.width / 2 - 10, 25);
-    // circe of gravitational acceleration
-    context.beginPath();
-    context.arc(xmax / 2, ymax / 2, 0.4 * xmax, 0, 2 * Math.PI, false);
-    context.strokeStyle = "blue";
-    context.lineWidth = 0.5;
-    context.stroke();
-    // draw yellow acceleration vector
-    context.beginPath();
-    context.moveTo(xmax / 2, ymax / 2);
-    context.lineTo(xmax / 2 + 0.4 * xmax * ax / 9.81, ymax / 2 - 0.4 * ymax * ay / 9.81);
-    context.strokeStyle = "yellow";
-    context.lineWidth = 5.0;
-    context.stroke();
+function init() {
+    container = document.createElement('div');
+    $('.container').append(container);
+    //document.body.appendChild(container);
+    camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 1, 3000);
+    camera.position.z = 1000;
+    scene = new THREE.Scene();
+    var PI2 = Math.PI * 2;
+    program = function(context) {
+        context.beginPath();
+        context.arc(0, 0, 0.5, 0, PI2, true);
+        context.fill();
+    };
+    group = new THREE.Group();
+    scene.add(group);
+    for (var i = 0; i < 5; i++) {
+        console.log('creating balls!');
+        material = new THREE.SpriteCanvasMaterial({
+            color: Math.random() * 0x808008 + 0x808080,
+            program: program
+        });
+        particle = new THREE.Sprite(material);
+        particle.position.x = Math.random() * 2000 - 1000;
+        particle.position.y = Math.random() * 2000 - 1000;
+        particle.position.z = Math.random() * 2000 - 1000;
+        particle.scale.x = particle.scale.y = Math.random() * 20 + 10;
+        group.add(particle);
+    }
+    renderer = new THREE.CanvasRenderer();
+    renderer.setPixelRatio(window.devicePixelRatio);
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    container.appendChild(renderer.domElement);
+    stats = new Stats();
+    container.appendChild(stats.dom);
+    document.addEventListener('touchstart', onDocumentTouchStart, false);
+    document.addEventListener('touchmove', onDocumentTouchMove, false);
+    //window.addEventListener("deviceorientation", ondevicemotion, false);
 }
+
+function updateBalls(valX, valY, valZ) {
+    console.log('balls added!');
+    var PI2 = Math.PI * 2;
+    program = function(context) {
+        context.beginPath();
+        context.arc(0, 0, 0.5, 0, PI2, true);
+        context.fill();
+    };
+    material = new THREE.SpriteCanvasMaterial({
+        color: Math.random() * 0x808008 + 0x808080,
+        program: program
+    });
+    particle = new THREE.Sprite(material);
+    particle.position.x = Math.round(valX) * 2000 - 1000;
+    particle.position.y = Math.round(valY) * 2000 - 1000;
+    particle.position.z = Math.round(valZ) * 2000 - 1000;
+    particle.scale.x = particle.scale.y = Math.random() * 20 + 10;
+    group.add(particle);
+    if (countmsg > 250) {
+        group.remove(particle);
+        countmsg = 50;
+        console.log('mas de 250');
+    }
+}
+
+//document.addEventListener('mousemove', onDocumentMouseMove, false);
+
+//
+//window.addEventListener('resize', onWindowResize, false);
+
+// function onWindowResize() {
+//     windowHalfX = window.innerWidth / 2;
+//     windowHalfY = window.innerHeight / 2;
+//     camera.aspect = window.innerWidth / window.innerHeight;
+//     camera.updateProjectionMatrix();
+//     renderer.setSize(window.innerWidth, window.innerHeight);
+// }
+//
+// function onDocumentMouseMove(event) {
+//     mouseX = event.clientX - windowHalfX;
+//     mouseY = event.clientY - windowHalfY;
+// }
+
+function onDocumentTouchStart(event) {
+    if (event.touches.length === 1) {
+        event.preventDefault();
+        mouseX = event.touches[0].pageX - windowHalfX;
+        mouseY = event.touches[0].pageY - windowHalfY;
+        updateBalls(mouseX, mouseY, ZZ);
+    }
+}
+
+function onDocumentTouchMove(event) {
+    if (event.touches.length === 1) {
+        event.preventDefault();
+        mouseX = event.touches[0].pageX - windowHalfX;
+        mouseY = event.touches[0].pageY - windowHalfY;
+    }
+}
+
+// window.ondevicemotion = function(event) {
+//         accX = event.accelerationIncludingGravity.x;
+//         accY = event.accelerationIncludingGravity.y;
+//         accZ = event.accelerationIncludingGravity.z;
+//     }
+//
+
+function render() {
+    camera.position.x += (Math.round(XX) - camera.position.x) * 0.05;
+    camera.position.y += (-Math.round(YY) - camera.position.y) * 0.05;
+    camera.lookAt(scene.position);
+    group.rotation.x += 0.01;
+    group.rotation.y += 0.02;
+    renderer.render(scene, camera);
+}
+
+//console.log('accX:' + accX);
+
 //$(document).ready(function() {
 var namespace = '/test';
 var socket = io.connect('http://192.168.0.159:5000' + namespace);
@@ -160,136 +200,71 @@ socket.on('disconnect', function() {
 });
 socket.on('my response', function(msg) {
     $('#log').append('<br>Received: ' + msg.data);
+    //console.log('countmsg: ' + countmsg);
+
 });
-$('#conectar').on('click', function(event) {
-    socket.emit('join', { room: 'ensamble' });
+socket.on('ensamble', function(msg) {
+    //$('#log').append('<br>Received: ' + msg.data);
+    countmsg++;
+    //updateMatrix(XX, YY, ZZ);
 });
+// $('#conectar').on('click', function(event) {
+//     socket.emit('join', { room: 'ensamble' });
+// });
 $('#hola').on('click', function(event) {
-    startWatch();
+    socket.emit('join', { room: 'ensamble' });
+    //startWatch();
 });
-// $('form#emit').submit(function(event) {
-//     socket.emit('my event', { data: $('#emit_data').val() });
-//     return false;
-// });
-// $('form#broadcast').submit(function(event) {
-//     socket.emit('my broadcast event', { data: $('#broadcast_data').val() });
-//     return false;
-// });
-// $('form#join').submit(function(event) {
-//     socket.emit('join', { room: $('#join_room').val() });
-//     return false;
-// });
-// $('form#leave').submit(function(event) {
-//     socket.emit('leave', { room: $('#leave_room').val() });
-//     return false;
-// });
-// $('form#send_room').submit(function(event) {
-//     socket.emit('my room event', { room: $('#room_name').val(), data: $('#room_data').val() });
-//     return false;
-// });
-// $('form#close').submit(function(event) {
-//     socket.emit('close room', { room: $('#close_room').val() });
-//     return false;
-// });
-// $('form#disconnect').submit(function(event) {
-//     socket.emit('disconnect request');
-//     return false;
-// });
-//});
-//var watchID = navigator.gyroscope.watchAngularSpeed(onSuccess, onError, options);
+init();
+animate();
 
-// function onSuccess(speed) {
-//     // alert('AngularSpeed:\n' +
-//     //     'x: ' + speed.x + '\n' +
-//     //     'y: ' + speed.y + '\n' +
-//     //     'z: ' + speed.z + '\n' +
-//     //     'Timestamp: ' + speed.timestamp + '\n');
-//     $('#gx').html(speed.x);
-//     $('#gy').html(speed.y);
-//     $('#gz').html(speed.z);
-//     $('#mainpage').css('background-color', 'rgba(' + Math.round(speed.x) + ',' + Math.round(speed.y) + ',' + Math.round(speed.z) + ')');
-//     // $('.newcol').css('top', speed.x);
-//     // $('.shifted').css('top', speed.y);
+function animate() {
+    requestAnimationFrame(animate);
+    render();
+    stats.update();
+}
 
-// }
-
-// function onError() {
-//     alert('onError!');
-// }
 // $(document).ready(function() {
-//     $('#wifi').click(function() {
-//         try {
-//             WifiWizard.isWifiEnabled(win, fail);
-//         } catch (err) {
-//             alert("Plugin Error - " + err.message);
-//         }
-
-//     });
-
-//     function win(e) {
-//         if (e) {
-//             alert("Wifi enabled already");
-//         } else {
-//             WifiWizard.setWifiEnabled(true, winEnable, failEnable);
-//         }
-
+// $('#conectar').click(function() {
+//     try {
+//         WifiWizard.isWifiEnabled(win, fail);
+//     } catch (err) {
+//         alert("Plugin Error - " + err.message);
 //     }
-
-//     function fail(e) {
-//         alert("Error checking Wifi status");
-//     }
-
-//     function winEnable(e) {
-//         alert("Wifi enabled successfully");
-//     }
-
-//     function failEnable(e) {
-//         alert("Error enabling Wifi ");
-//     }
-
-//     $('#search').click(function() {
-//         try {
-//             WifiWizard.listNetworks(listHandler, fail);
-//         } catch (err) {
-//             alert("Plugin Error - " + err.message);
-//         }
-
-//     });
-
-//     function listHandler(a) {
-//         alert(a);
-//     }
-
-//     $('#scan').click(function() {
-//         try {
-//             WifiWizard.getScanResults({ numLevels: 1 }, listHandler1, fail);
-//         } catch (err) {
-//             alert("Plugin Error - " + err.message);
-//         }
-
-//     });
-
-//     function listHandler1(a) {
-//         alert(JSON.stringify(a));
-//     }
-
-//     $('#connect').click(function() {
-//         try {
-//             var config = WifiWizard.formatWPAConfig("Invitados", "invitado123");
-//             WifiWizard.addNetwork(config, function() {
-//                 WifiWizard.connectNetwork("Invitados");
-//             });
-//         } catch (err) {
-//             alert("Plugin Error - " + err.message);
-//         }
-
-//     });
-
-//     function connectSuccess(e) {
-//         alert("Connect success");
-//     }
-//     $('#onoff input').on('click', function() {
-//         newOnoff();
-//     });
 
 // });
+
+$('#conectar').click(function() {
+    try {
+        WifiWizard.isWifiEnabled(win, fail);
+    } catch (err) {
+        alert("Plugin Error - " + err.message);
+    }
+
+});
+
+function win(e) {
+    if (e) {
+        console.log("Wifi enabled already");
+        var config = WifiWizard.formatWPAConfig("MrRobot", "sayh3ll0tomylittlefriend");
+        WifiWizard.addNetwork(config, function() {
+            WifiWizard.connectNetwork("MrRobot");
+
+        });
+    } else {
+        WifiWizard.setWifiEnabled(true, winEnable, failEnable);
+    }
+
+}
+
+function fail(e) {
+    console.log("Error checking Wifi status");
+}
+
+function winEnable(e) {
+    console.log("Wifi enabled successfully");
+}
+
+function failEnable(e) {
+    console.log("Error enabling Wifi ");
+}

@@ -1,5 +1,11 @@
 body {
-    padding-top: 54px;
+    /* padding-top: 54px; */
+    z-index: 1;
+    background: #000000 !important;
+}
+
+p {
+    color: #FFFFFF;
 }
 
 @media (min-width: 992px) {
@@ -132,7 +138,18 @@ input:checked+.slider:before {
     /* background-color: rgba(0, 0, 0, .3); */
 }
 
-canvas {
+.botones {
+    position: absolute;
+    top: 20%;
+}
+
+
+/* canvas {
     width: 100%;
     height: auto;
-}
+    position: absolute;
+    border: 5px solid rgba(255, 255, 255, 0.1);
+    box-shadow: inset 0 0 100px #4162a9;
+    transform: translateZ(0);
+    z-index: -1;
+} */
