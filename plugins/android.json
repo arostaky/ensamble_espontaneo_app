@@ -25,6 +25,9 @@
     "cordova-plugin-webpack-transpiler": {
       "CONFIG": "typescript",
       "PACKAGE_NAME": "com.acrovia.ensambleapp"
+    },
+    "cordova-plugin-splashscreen": {
+      "PACKAGE_NAME": "com.acrovia.ensambleapp"
     }
   },
   "dependent_plugins": {}

@@ -17,6 +17,24 @@
     <allow-intent href="geo:*" />
     <platform name="android">
         <allow-intent href="market:*" />
+        <icon density="ldpi" src="res/icons/android/drawable-ldpi-icon.png" />
+        <icon density="mdpi" src="res/icons/android/drawable-mdpi-icon.png" />
+        <icon density="hdpi" src="res/icons/android/drawable-hdpi-icon.png" />
+        <icon density="xhdpi" src="res/icons/android/drawable-xhdpi-icon.png" />
+        <icon density="xxhdpi" src="res/icons/android/drawable-xxhdpi-icon.png" />
+        <icon density="xxxhdpi" src="res/icons/android/drawable-xxxhdpi-icon.png" />
+        <splash density="land-ldpi" src="res/screens/android/drawable-land-ldpi-screen.png" />
+        <splash density="land-mdpi" src="res/screens/android/drawable-land-mdpi-screen.png" />
+        <splash density="land-hdpi" src="res/screens/android/drawable-land-hdpi-screen.png" />
+        <splash density="land-xhdpi" src="res/screens/android/drawable-land-xhdpi-screen.png" />
+        <splash density="land-xxhdpi" src="res/screens/android/drawable-land-xxhdpi-screen.png" />
+        <splash density="land-xxxhdpi" src="res/screens/android/drawable-land-xxxhdpi-screen.png" />
+        <splash density="port-ldpi" src="res/screens/android/drawable-port-ldpi-screen.png" />
+        <splash density="port-mdpi" src="res/screens/android/drawable-port-mdpi-screen.png" />
+        <splash density="port-hdpi" src="res/screens/android/drawable-port-hdpi-screen.png" />
+        <splash density="port-xhdpi" src="res/screens/android/drawable-port-xhdpi-screen.png" />
+        <splash density="port-xxhdpi" src="res/screens/android/drawable-port-xxhdpi-screen.png" />
+        <splash density="port-xxxhdpi" src="res/screens/android/drawable-port-xxxhdpi-screen.png" />
     </platform>
     <platform name="ios">
         <allow-intent href="itms:*" />
@@ -27,11 +45,13 @@
     <plugin name="cordova-plugin-gyroscope" spec="^0.1.4" />
     <preference name="orientation" value="portrait" />
     <preference name="Fullscreen" value="true" />
+    <preference name="SplashScreenDelay" value="3000" />
     <plugin name="cordova-plugin-device-motion" spec="^1.2.5" />
     <plugin name="com.pylonproducts.wifiwizard" spec="~0.2.11" />
     <plugin name="cordova-plugin-webpack-transpiler" spec="^0.3.1">
         <variable name="CONFIG" value="babel" />
     </plugin>
+    <plugin name="cordova-plugin-splashscreen" spec="^5.0.2" />
     <engine name="android" spec="^7.0.0" />
     <engine name="browser" spec="^5.0.3" />
 </widget>
