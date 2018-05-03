@@ -140,7 +140,13 @@ input:checked+.slider:before {
 
 .botones {
     position: absolute;
-    top: 20%;
+    top: 50%;
+    left: 35%;
+}
+
+#conectar {
+    border-radius: 50%;
+    height: 90px;
 }
 
 

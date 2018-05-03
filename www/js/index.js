@@ -11,7 +11,8 @@ var container, stats, camera, scene, renderer, group, particle = [],
     accY = 2,
     accZ = 3,
     countmsg = 1,
-    material, program, mysid, othersid = new Set([]);
+    material, program, mysid, othersid = new Set([]),
+    connectStatus = false;
 var app = {
     // Application Constructor
     initialize: function() {
@@ -25,7 +26,8 @@ var app = {
     onDeviceReady: function() {
         this.receivedEvent('deviceready');
         console.log('device is ready');
-        //startWatch();
+        getCurrentSSID();
+        startWatch();
         //navigator.gyroscope.watch(onSuccess, onError, options);
     },
 
@@ -64,7 +66,7 @@ function onSuccess(acceleration) {
     XX = acceleration.x;
     YY = acceleration.y;
     ZZ = acceleration.z;
-    socket.emit('my room event', { room: 'ensamble', data: XX + ' ' + YY + ' ' + ZZ });
+    // socket.emit('my room event', { room: 'ensamble', data: XX + ' ' + YY + ' ' + ZZ });
 }
 // onError: Failed to get the acceleration
 //
@@ -87,7 +89,7 @@ function init() {
     };
     group = new THREE.Group();
     scene.add(group);
-    for (var i = 0; i < 5; i++) {
+    for (var i = 0; i < 50; i++) {
         //console.log('creating balls!');
         material = new THREE.SpriteCanvasMaterial({
             color: Math.random() * 0x808008 + 0x808080,
@@ -149,10 +151,11 @@ function otherBalls(valX, valY, valZ) {
 }
 
 function onDocumentTouchStart(event) {
-    if (event.touches.length === 1) {
+    if (event.touches.length === 1 && connectStatus == true) {
         event.preventDefault();
         mouseX = event.touches[0].pageX - windowHalfX;
         mouseY = event.touches[0].pageY - windowHalfY;
+        socket.emit('my room event', { room: 'ensamble', data: XX + ' ' + YY + ' ' + ZZ });
         updateBalls(mouseX, mouseY, ZZ);
     }
 }
@@ -191,9 +194,12 @@ var socket = io.connect('http://192.168.0.159:5000' + namespace);
 
 socket.on('connect', function() {
     socket.emit('my event', { data: 'I\'m connected!' });
+    connectStatus = true;
+    $('#conectar').hide();
 });
 socket.on('disconnect', function() {
-    $('#log').append('<br>Disconnected');
+    $('#conectar').show();
+    //$('#log').append('<br>Disconnected');
 });
 socket.on('my response', function(msg) {
     // $('#log').append('<br>Received: ' + msg.data);
@@ -211,12 +217,13 @@ socket.on('ensamble', function(msg) {
     //console.log('data XYZ: ' + JSON.stringify(msg.data));
     //console.log('sid' + JSON.stringify(msg.sid));
     if (mysid != msg.sid) {
+        console.log('msg id:' + msg.sid);
         var msgsid = msg.sid;
         var msgdata = msg.data;
         var otherdata = { msgsid: msgsid, msgdata: msgdata }
         othersid.add(otherdata);
-        console.log('othersid: ' + JSON.stringify(othersid));
-        for (var item of othersid) console.log('othersid:' + item);
+        //console.log('othersid: ' + JSON.stringify(othersid));
+        for (let item of othersid) console.log('othersid:' + item.msgsid + item.msgdata);
         console.log('msgid othersid: ' + item.msgsid);
         console.log('data othersid: ' + item.msgdata);
         var alldataballs = item.msgdata;
@@ -232,12 +239,13 @@ socket.on('ensamble', function(msg) {
 // $('#conectar').on('click', function(event) {
 //     socket.emit('join', { room: 'ensamble' });
 // });
-$('#hola').on('click', function(event) {
-    socket.emit('join', { room: 'ensamble' });
-    startWatch();
-});
+// $('#hola').on('click', function(event) {
+//     socket.emit('join', { room: 'ensamble' });
+//     startWatch();
+// });
 init();
 animate();
+//startWatch();
 
 function animate() {
     requestAnimationFrame(animate);
@@ -256,11 +264,7 @@ function animate() {
 // });
 
 $('#conectar').click(function() {
-    try {
-        WifiWizard.isWifiEnabled(win, fail);
-    } catch (err) {
-        alert("Plugin Error - " + err.message);
-    }
+    getCurrentSSID()
 
 });
 
@@ -274,6 +278,11 @@ function win(e) {
         });
     } else {
         WifiWizard.setWifiEnabled(true, winEnable, failEnable);
+        var config = WifiWizard.formatWPAConfig("MrRobot", "sayh3ll0tomylittlefriend");
+        WifiWizard.addNetwork(config, function() {
+            WifiWizard.connectNetwork("MrRobot");
+
+        });
     }
 
 }
@@ -288,4 +297,27 @@ function winEnable(e) {
 
 function failEnable(e) {
     console.log("Error enabling Wifi ");
+}
+
+function ssidHandler(s) {
+    //alert("Current SSID" + s);
+    console.log('ssid: ' + s);
+    if (s = '"MrRobot"') {
+        console.log('MrRobot found!');
+        socket.emit('join', { room: 'ensamble' });
+    } else {
+        try {
+            WifiWizard.isWifiEnabled(win, fail);
+        } catch (err) {
+            alert("Plugin Error - " + err.message);
+        }
+    }
+}
+
+function fail(e) {
+    alert("Failed" + e);
+}
+
+function getCurrentSSID() {
+    WifiWizard.getCurrentSSID(ssidHandler, fail);
 }
