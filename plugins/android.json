@@ -28,6 +28,9 @@
     },
     "cordova-plugin-splashscreen": {
       "PACKAGE_NAME": "com.acrovia.ensambleapp"
+    },
+    "cordova-plugin-x-toast": {
+      "PACKAGE_NAME": "com.acrovia.ensambleapp"
     }
   },
   "dependent_plugins": {}

@@ -11,13 +11,32 @@ var container, stats, camera, scene, renderer, group, particle = [],
     accY = 2,
     accZ = 3,
     countmsg = 1,
-    material, program, mysid, othersid = new Set([]),
+    material, program, mysid,
     connectStatus = false,
     alldataballs;
+const othersid = new Set();
+var counter = 0,
+    change = false,
+    localCounter = localStorage.getItem('count');
+
+function setCounter(val) {
+    if (localCounter == null) {
+        localStorage.setItem('count', val);
+    } else {
+        counter = val;
+        if (counter != parseInt(localCounter)) {
+            change = true;
+        }
+    }
+
+}
 var app = {
     // Application Constructor
     initialize: function() {
         document.addEventListener('deviceready', this.onDeviceReady.bind(this), false);
+        document.addEventListener("backbutton", onBackKeyDown, false);
+        document.addEventListener("menubutton", onMenuKeyDown, false);
+        document.addEventListener("pause", onPause, false);
     },
 
     // deviceready Event Handler
@@ -47,6 +66,18 @@ var app = {
 app.initialize();
 // Start watching the acceleration
 //
+function onBackKeyDown() {
+    console.log('back key pressed!');
+}
+
+function onMenuKeyDown() {
+    console.log('menu key pressed');
+}
+
+function onPause() {
+    console.log('app on pause');
+}
+
 function startWatch() {
     // Update acceleration every 100 milliseconds
     var options = { frequency: 100 };
@@ -145,27 +176,31 @@ function moveBalls(valX, valY, valZ) {
 }
 
 function otherBalls(valX, valY, valZ) {
-    particle.position.x = valX * 1000;
-    particle.position.y = valY * 1000;
-    particle.position.z = 0;
-    particle.scale.x = particle.scale.y = valX * 750 + 200;
+
+    // particle.position.x = valX * 2000 - 500;
+    // particle.position.y = valX * 2000 - 500;
+    // particle.position.z = Math.random() * 2000 - 500;
+    // particle.scale.x = particle.scale.y = Math.random() * 200 + 100;
+    //group.add(particle);
 }
 
 function onDocumentTouchStart(event) {
-    if (event.touches.length === 1 && connectStatus == true) {
-        event.preventDefault();
-        mouseX = event.touches[0].pageX - windowHalfX;
-        mouseY = event.touches[0].pageY - windowHalfY;
-        socket.emit('my room event', { room: 'ensamble', data: XX + ' ' + YY + ' ' + ZZ });
-        updateBalls(mouseX, mouseY, ZZ);
-    }
-}
-
-function onDocumentTouchMove(event) {
     if (event.touches.length === 1) {
         event.preventDefault();
         mouseX = event.touches[0].pageX - windowHalfX;
         mouseY = event.touches[0].pageY - windowHalfY;
+    }
+}
+
+function onDocumentTouchMove(event) {
+    if (event.touches.length === 1 && connectStatus == true) {
+        event.preventDefault();
+        mouseX = event.touches[0].pageX - windowHalfX;
+        mouseY = event.touches[0].pageY - windowHalfY;
+        console.log('mouseX:' + mouseX);
+        console.log('mouseY: ' + mouseY);
+        socket.emit('my room event', { room: 'ensamble', data: mouseX + ' ' + mouseY + ' ' + ZZ, counter: counter });
+        //updateBalls(mouseX, mouseY, ZZ);
     }
 }
 
@@ -177,13 +212,15 @@ function onDocumentTouchMove(event) {
 //
 
 function render() {
+    renderer.autoClear = false;
+    renderer.clear();
     camera.position.x += (Math.round(XX) - camera.position.x) * 0.05;
     camera.position.y += (-Math.round(YY) - camera.position.y) * 0.05;
     camera.lookAt(scene.position);
     group.rotation.x += XX / 1000;
     group.rotation.y += YY / 1000;
-    group.position.x = XX / 500;
-    group.position.y = YY / 500;
+    group.position.x += XX / 500;
+    group.position.y += YY / 500;
     renderer.render(scene, camera);
 }
 
@@ -199,6 +236,11 @@ socket.on('connect', function() {
     $('#conectar').hide();
 });
 socket.on('disconnect', function() {
+    window.plugins.toast.showShortTop('Desconectado', function(a) {
+        console.log('toast success: ' + a)
+    }, function(b) {
+        //alert('toast error: ' + b)
+    });
     $('#conectar').show();
     //$('#log').append('<br>Disconnected');
 });
@@ -206,6 +248,10 @@ socket.on('my response', function(msg) {
     // $('#log').append('<br>Received: ' + msg.data);
     //console.log('countmsg: ' + countmsg);
 
+});
+socket.on('my response count', function(msg) {
+    //$('#log').append('<br>Received: ' + msg.data + msg.count);
+    setCounter(msg.count);
 });
 socket.on('joinroom', function(val) {
     //console.log('sid: ' + JSON.stringify(val.sid));
@@ -218,19 +264,41 @@ socket.on('ensamble', function(msg) {
     //console.log('data XYZ: ' + JSON.stringify(msg.data));
     //console.log('sid' + JSON.stringify(msg.sid));
     if (mysid != msg.sid) {
-        console.log('msg id:' + msg.sid);
+        //console.log('msg id:' + msg.sid);
         var msgsid = msg.sid;
         var msgdata = msg.data;
-        var otherdata = { msgsid: msgsid, msgdata: msgdata }
+        var otherdata = { 'msgsid': msgsid, 'msgdata': msgdata }
         othersid.add(otherdata);
+        //console.log('otherdata: ' + JSON.stringify(otherdata));
         //console.log('othersid: ' + JSON.stringify(othersid));
-        for (let item of othersid) {
-            console.log('othersid:' + item.msgsid + item.msgdata);
-            alldataballs = item.msgdata;
+        //for (let item of othersid) console.log('othersid:' + item.msgsid + item.msgdata);
+        var _iteratorNormalCompletion = true;
+        var _didIteratorError = false;
+        var _iteratorError = undefined;
+        var item;
+        try {
+            for (var _iterator = othersid[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+                item = _step.value;
+                //console.log('othersid:' + item.msgsid + item.msgdata);
+            }
+        } catch (err) {
+            _didIteratorError = true;
+            _iteratorError = err;
+        } finally {
+            try {
+                if (!_iteratorNormalCompletion && _iterator.return) {
+                    _iterator.return();
+                }
+            } finally {
+                if (_didIteratorError) {
+                    throw _iteratorError;
+                }
+            }
         }
+        alldataballs = item.msgdata;
         alldataballs = alldataballs.split(' ');
-        console.log('data for ballsX:' + alldataballs[0]);
-        console.log('data for ballsY:' + alldataballs[1]);
+        //console.log('data for ballsX:' + alldataballs[0]);
+        //console.log('data for ballsY:' + alldataballs[1]);
         otherBalls(alldataballs[0], alldataballs[1]);
         //put a ball with name and move it:
 
@@ -265,23 +333,23 @@ function animate() {
 // });
 
 $('#conectar').click(function() {
-    getCurrentSSID()
+    getCurrentSSID();
 
 });
 
 function win(e) {
     if (e) {
         console.log("Wifi enabled already");
-        var config = WifiWizard.formatWPAConfig("MrRobot", "sayh3ll0tomylittlefriend");
+        var config = WifiWizard.formatWPAConfig("Mr_Robot", "sayh3ll0tomylittlefriend");
         WifiWizard.addNetwork(config, function() {
-            WifiWizard.connectNetwork("MrRobot");
+            WifiWizard.connectNetwork("Mr_Robot");
 
         });
     } else {
         WifiWizard.setWifiEnabled(true, winEnable, failEnable);
-        var config = WifiWizard.formatWPAConfig("MrRobot", "sayh3ll0tomylittlefriend");
+        var config = WifiWizard.formatWPAConfig("Mr_Robot", "sayh3ll0tomylittlefriend");
         WifiWizard.addNetwork(config, function() {
-            WifiWizard.connectNetwork("MrRobot");
+            WifiWizard.connectNetwork("Mr_Robot");
 
         });
     }
@@ -303,20 +371,22 @@ function failEnable(e) {
 function ssidHandler(s) {
     //alert("Current SSID" + s);
     console.log('ssid: ' + s);
-    if (s = '"MrRobot"') {
-        console.log('MrRobot found!');
+    if (s = '"Mr_Robot"') {
+        console.log('Mr_Robot found!');
         socket.emit('join', { room: 'ensamble' });
     } else {
         try {
             WifiWizard.isWifiEnabled(win, fail);
         } catch (err) {
-            alert("Plugin Error - " + err.message);
+            console.log('Plugin Error -' + err.message);
+            //alert("Plugin Error - " + err.message);
         }
     }
 }
 
 function fail(e) {
-    alert("Failed" + e);
+    //alert("Failed" + e);
+    console.log('wifi disabled');
 }
 
 function getCurrentSSID() {

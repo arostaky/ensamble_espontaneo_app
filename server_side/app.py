@@ -13,7 +13,7 @@ app = Flask(__name__)
 app.wsgi_app = socketio.Middleware(sio, app.wsgi_app)
 app.config['SECRET_KEY'] = 'secret!'
 thread = None
-
+connectCounter = 0
 
 def background_thread():
     """Example of how to send server generated events to clients."""
@@ -21,7 +21,7 @@ def background_thread():
     while True:
         sio.sleep(10)
         count += 1
-        sio.emit('my response', {'data': 'Server generated event'},
+        sio.emit('my response', {'data': 'Server generated event, count is: ' + str(count)},
                  namespace='/test')
 
 
@@ -68,11 +68,12 @@ def close(sid, message):
 
 @sio.on('my room event', namespace='/test')
 def send_room_message(sid, message):
-    sio.emit('ensamble', {'data': message['data'], 'sid':sid}, room=message['room'],
+    sio.emit('ensamble', {'data': message['data'], 'sid':sid, 'counter':message['counter']}, room=message['room'],
              namespace='/test')
     #os.system("echo '0 " + str(message) + ";' | pdsend 3001 localhost udp")
-    os.system("echo '0 "+str(message['data'])+";' | /Applications/Pd-extended.app/Contents/Resources/bin/pdsend 3001 localhost udp")
-
+    #os.system("echo '0 "+str(message['data'])+";' | /Applications/Pd-extended.app/Contents/Resources/bin/pdsend 300"+str(connectCounter)+" localhost udp")
+    print(sid)
+    print("echo '0 "+str(message['data'])+";' | /Applications/Pd-extended.app/Contents/Resources/bin/pdsend 300"+str(message['counter'])+" localhost udp")
 
 @sio.on('disconnect request', namespace='/test')
 def disconnect_request(sid):
@@ -81,14 +82,19 @@ def disconnect_request(sid):
 
 @sio.on('connect', namespace='/test')
 def test_connect(sid, environ):
-    sio.emit('my response', {'data': 'Connected', 'count': 0}, room=sid,
+    global connectCounter
+    connectCounter+=1
+    sio.emit('my response count', {'data': 'Connected', 'count': connectCounter}, room=sid,
              namespace='/test')
 
 
 @sio.on('disconnect', namespace='/test')
 def test_disconnect(sid):
+    global connectCounter
+    connectCounter-=1
+    sio.emit('my response count', {'data': 'Disconnected', 'count': connectCounter}, room=sid,
+             namespace='/test')
     print('Client disconnected')
-
 
 if __name__ == '__main__':
     if sio.async_mode == 'threading':
