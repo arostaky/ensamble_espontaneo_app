@@ -149,6 +149,11 @@ input:checked+.slider:before {
     height: 90px;
 }
 
+canvas {
+    width: 100% !important;
+    overflow: hidden;
+}
+
 
 /* canvas {
     width: 100%;
