@@ -133,7 +133,7 @@ function init() {
     };
     group = new THREE.Group();
     scene.add(group);
-    for (var i = 0; i < 50; i++) {
+    for (var i = 0; i < 10; i++) {
         //console.log('creating balls!');
         material = new THREE.SpriteCanvasMaterial({
             color: Math.random() * 0x808008 + 0x808080,
@@ -190,24 +190,24 @@ function moveBalls(valX, valY, valZ) {
 function otherBalls(valX, valY, valZ) {
     console.log('data for ballsX:' + valX);
     console.log('data for ballsY:' + valY);
-    // camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-    // scene = new THREE.Scene();
-    // // Create a circle around the mouse and move it
-    // // The sphere has opacity 0
-    // var mouseGeometry = new THREE.SphereGeometry(1, 0, 0);
-    // var mouseMaterial = new THREE.MeshBasicMaterial({
-    //     color: 0x0000ff
-    // });
-    // mouseMesh = new THREE.Mesh(mouseGeometry, mouseMaterial);
-    // mouseMesh.position.z = -5;
-    // scene.add(mouseMesh);
-    // // Make the sphere follow the mouse
-    // var vector = new THREE.Vector3(valX, valY, 0.5);
-    // vector.unproject(camera);
-    // var dir = vector.sub(camera.position).normalize();
-    // var distance = -camera.position.z / dir.z;
-    // var pos = camera.position.clone().add(dir.multiplyScalar(distance));
-    // mouseMesh.position.copy(pos);
+    camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+    scene = new THREE.Scene();
+    // Create a circle around the mouse and move it
+    // The sphere has opacity 0
+    var mouseGeometry = new THREE.SphereGeometry(1, 0, 0);
+    var mouseMaterial = new THREE.MeshBasicMaterial({
+        color: 0x0000ff
+    });
+    mouseMesh = new THREE.Mesh(mouseGeometry, mouseMaterial);
+    mouseMesh.position.z = -5;
+    scene.add(mouseMesh);
+    // Make the sphere follow the mouse
+    var vector = new THREE.Vector3(valX, valY, 0.5);
+    vector.unproject(camera);
+    var dir = vector.sub(camera.position).normalize();
+    var distance = -camera.position.z / dir.z;
+    var pos = camera.position.clone().add(dir.multiplyScalar(distance));
+    mouseMesh.position.copy(pos);
     // particle.position.x = valX * 2000 - 500;
     // particle.position.y = valY * 2000 - 500;
     // particle.position.z = Math.random() * 2000 - 500;

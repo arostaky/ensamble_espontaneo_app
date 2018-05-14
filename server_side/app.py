@@ -72,8 +72,9 @@ def send_room_message(sid, message):
              namespace='/test')
     #os.system("echo '0 " + str(message) + ";' | pdsend 3001 localhost udp")
     #os.system("echo '0 "+str(message['data'])+";' | /Applications/Pd-extended.app/Contents/Resources/bin/pdsend 300"+str(connectCounter)+" localhost udp")
-    print(sid)
+    #print(sid)
     print("echo '0 "+str(message['data'])+";' | /Applications/Pd-extended.app/Contents/Resources/bin/pdsend 300"+str(message['counter'])+" localhost udp")
+    os.system("echo '0 "+str(message['data'])+";' | /Applications/Pd-extended.app/Contents/Resources/bin/pdsend 300"+str(message['counter'])+" localhost udp")
 
 @sio.on('disconnect request', namespace='/test')
 def disconnect_request(sid):
