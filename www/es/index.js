@@ -231,7 +231,7 @@ function onDocumentTouchMove(event) {
         // console.log('mouseX:' + mouseX);
         // console.log('mouseY: ' + mouseY);
         socket.emit('my room event', { room: 'ensamble', data: mouseX * XX + ' ' + mouseY * YY + ' ' + ZZ, counter: counter });
-        updateBalls(mouseX, mouseY, ZZ);
+        updateBalls(mouseX, mouseY, XX, YY, ZZ);
     }
 }
 
@@ -411,12 +411,17 @@ function failEnable(e) {
 function ssidHandler(s) {
     //alert("Current SSID" + s);
     console.log('ssid: ' + s);
-    if (s = '"Ensamble"') {
-        console.log('Mr_Robot found!');
+    if (s == '"Ensamble"') {
+        console.log('Ensamble found!');
         socket.emit('join', { room: 'ensamble' });
     } else {
         try {
             WifiWizard.isWifiEnabled(win, fail);
+            var config = WifiWizard.formatWPAConfig("Ensamble", "Ensamble123");
+            WifiWizard.addNetwork(config, function() {
+                WifiWizard.connectNetwork("Ensamble");
+    
+            });
         } catch (err) {
             console.log('Plugin Error -' + err.message);
             //alert("Plugin Error - " + err.message);
