@@ -260,7 +260,7 @@ function render() {
 
 //$(document).ready(function() {
 var namespace = '/test';
-var socket = io.connect('http://192.168.0.159:5000' + namespace);
+var socket = io.connect('http://192.168.0.1:5000' + namespace);
 
 socket.on('connect', function() {
     socket.emit('my event', { data: 'I\'m connected!' });
@@ -378,18 +378,18 @@ $('#conectar').click(function() {
 });
 
 function win(e) {
+    var config = WifiWizard.formatWPAConfig("Ensamble", "Ensamble123");
     if (e) {
         console.log("Wifi enabled already");
-        var config = WifiWizard.formatWPAConfig("Mr_Robot", "sayh3ll0tomylittlefriend");
+        
         WifiWizard.addNetwork(config, function() {
-            WifiWizard.connectNetwork("Mr_Robot");
+            WifiWizard.connectNetwork("Ensamble");
 
         });
     } else {
         WifiWizard.setWifiEnabled(true, winEnable, failEnable);
-        var config = WifiWizard.formatWPAConfig("Mr_Robot", "sayh3ll0tomylittlefriend");
         WifiWizard.addNetwork(config, function() {
-            WifiWizard.connectNetwork("Mr_Robot");
+            WifiWizard.connectNetwork("Ensamble");
 
         });
     }
@@ -411,7 +411,7 @@ function failEnable(e) {
 function ssidHandler(s) {
     //alert("Current SSID" + s);
     console.log('ssid: ' + s);
-    if (s = '"Mr_Robot"') {
+    if (s = '"Ensamble"') {
         console.log('Mr_Robot found!');
         socket.emit('join', { room: 'ensamble' });
     } else {
