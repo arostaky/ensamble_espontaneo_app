@@ -155,6 +155,7 @@ function init() {
     container.appendChild(stats.dom);
     document.addEventListener('touchstart', onDocumentTouchStart, false);
     document.addEventListener('touchmove', onDocumentTouchMove, false);
+    document.addEventListener('touchend', onDocumentTouchEnd, false);
     //window.addEventListener("deviceorientation", ondevicemotion, false);
 }
 
@@ -230,8 +231,14 @@ function onDocumentTouchMove(event) {
         mouseY = event.touches[0].pageY - windowHalfY;
         // console.log('mouseX:' + mouseX);
         // console.log('mouseY: ' + mouseY);
-        socket.emit('my room event', { room: 'ensamble', data: mouseX * XX + ' ' + mouseY * YY + ' ' + ZZ, counter: counter });
-        updateBalls(mouseX, mouseY, XX, YY, ZZ);
+        //socket.emit('my room event', { room: 'ensamble', data: mouseX * XX + ' ' + mouseY * YY + ' ' + ZZ, counter: counter });
+        socket.emit('my room event', { room: 'ensamble', data: mouseX + ' ' + mouseY + ' ' + XX + ' ' + YY + ' ' + ZZ, counter: counter });
+        //updateBalls(mouseX, mouseY, XX, YY, ZZ);
+    }
+}
+function onDocumentTouchEnd(event){
+    if (event.touches.length === 0 && connectStatus == true){
+    socket.emit('my room event', { room: 'ensamble', data: 0 + ' ' + 0 + ' ' + 0 + ' ' + 0 + ' ' + 0, counter: counter });
     }
 }
 
