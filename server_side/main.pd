@@ -1,0 +1,16 @@
+#N canvas 1977 390 1154 621 10;
+#X obj 306 452 dac~;
+#X obj 140 239 *~;
+#X obj 323 158 vsl 15 128 0 1 0 0 empty empty empty 0 -9 0 10 -262144
+-1 -1 6300 1;
+#X obj 63 143 socket0;
+#X obj 77 90 netreceive 3001 1;
+#X obj 505 98 netreceive 3001 1;
+#X obj 492 150 socket1;
+#X connect 1 0 0 0;
+#X connect 1 0 0 1;
+#X connect 2 0 1 1;
+#X connect 3 0 1 0;
+#X connect 3 1 1 0;
+#X connect 4 0 3 0;
+#X connect 5 0 6 0;

@@ -1,4 +1,4 @@
-#N canvas 1575 172 1451 634 10;
+#N canvas 1572 179 1451 634 10;
 #X obj 291 221 osc~;
 #X obj 318 376 dac~;
 #X floatatom 289 161 5 0 0 0 - - -, f 5;
@@ -6,7 +6,7 @@
 #X obj 110 190 phasor~;
 #X obj 376 324 *~;
 #X obj 543 297 vsl 15 128 0 1 0 0 empty empty empty 0 -9 0 10 -262144
--1 -1 12700 1;
+-1 -1 4300 1;
 #X floatatom 129 144 5 0 0 0 - - -, f 5;
 #X obj 256 95 route;
 #X obj 33 100 unpack 0 0 0;
@@ -25,7 +25,7 @@
 #X obj 400 256 print 3;
 #X obj 1009 406 vsl 15 128 0 1 0 0 empty empty empty 0 -9 0 10 -262144
 -1 -1 0 1;
-#X obj 1139 303 osc~;
+#X obj 1127 295 osc~;
 #X floatatom 1137 243 5 0 0 0 - - -, f 5;
 #X obj 946 131 print msg;
 #X obj 958 272 phasor~;
@@ -38,7 +38,8 @@
 #X obj 615 29 netreceive 3001 1;
 #X obj 1106 154 netreceive 3002 1;
 #X obj 257 72 netreceive 3003 1;
-#X obj 1141 396 * 1.5;
+#X obj 1141 396 * -1.5;
+#X obj 1120 265 * -100;
 #X connect 2 0 0 0;
 #X connect 5 0 1 0;
 #X connect 5 0 1 1;
@@ -51,7 +52,9 @@
 #X connect 9 1 11 0;
 #X connect 9 1 2 0;
 #X connect 9 2 12 0;
+#X connect 13 0 5 0;
 #X connect 14 0 13 0;
+#X connect 16 0 5 0;
 #X connect 17 0 16 0;
 #X connect 18 0 15 0;
 #X connect 18 0 19 0;
@@ -60,7 +63,8 @@
 #X connect 19 1 21 0;
 #X connect 19 1 14 0;
 #X connect 19 2 22 0;
-#X connect 25 0 24 0;
+#X connect 24 0 5 0;
+#X connect 25 0 38 0;
 #X connect 27 0 5 0;
 #X connect 28 0 37 0;
 #X connect 29 0 26 0;
@@ -74,3 +78,4 @@
 #X connect 35 0 29 0;
 #X connect 36 0 8 0;
 #X connect 37 0 27 0;
+#X connect 38 0 24 0;
