@@ -32,7 +32,6 @@ def index():
         thread = sio.start_background_task(background_thread)
     return render_template('index.html')
 
-
 @sio.on('my event', namespace='/test')
 def test_message(sid, message):
     sio.emit('my response', {'data': message['data']}, room=sid,
