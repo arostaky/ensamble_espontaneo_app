@@ -151,8 +151,8 @@ function init() {
     renderer.setPixelRatio(window.devicePixelRatio);
     renderer.setSize(window.innerWidth, window.innerHeight);
     container.appendChild(renderer.domElement);
-    stats = new Stats();
-    container.appendChild(stats.dom);
+    //stats = new Stats();
+    //container.appendChild(stats.dom);
     document.addEventListener('touchstart', onDocumentTouchStart, false);
     document.addEventListener('touchmove', onDocumentTouchMove, false);
     document.addEventListener('touchend', onDocumentTouchEnd, false);
@@ -363,7 +363,7 @@ animate();
 function animate() {
     requestAnimationFrame(animate);
     render();
-    stats.update();
+    //stats.update();
 }
 
 // $(document).ready(function() {
