@@ -42,10 +42,11 @@
 #X msg 736 201 samples/didgeridoo-a.wav;
 #X obj 75 117 r ins6;
 #X obj 622 227 sampleplayer 2;
+#X obj 379 159 + 2;
 #X connect 0 0 24 0;
 #X connect 1 0 15 0;
 #X connect 2 0 7 0;
-#X connect 5 0 33 0;
+#X connect 5 0 40 0;
 #X connect 6 0 1 0;
 #X connect 6 1 0 0;
 #X connect 6 3 5 0;
@@ -83,3 +84,4 @@
 #X connect 39 0 11 0;
 #X connect 39 0 10 0;
 #X connect 39 1 27 0;
+#X connect 40 0 33 0;
