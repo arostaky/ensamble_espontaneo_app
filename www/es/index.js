@@ -218,15 +218,16 @@ function otherBalls(valX, valY, valZ) {
 
 function onDocumentTouchStart(event) {
     if (event.touches.length === 1) {
-        event.preventDefault();
+        //event.preventDefault();
         mouseX = event.touches[0].pageX - windowHalfX;
         mouseY = event.touches[0].pageY - windowHalfY;
+        startWatch();
     }
 }
 
 function onDocumentTouchMove(event) {
     if (event.touches.length === 1 && connectStatus == true) {
-        event.preventDefault();
+        //event.preventDefault();
         mouseX = event.touches[0].pageX - windowHalfX;
         mouseY = event.touches[0].pageY - windowHalfY;
         // console.log('mouseX:' + mouseX);
@@ -239,6 +240,8 @@ function onDocumentTouchMove(event) {
 function onDocumentTouchEnd(event){
     if (event.touches.length === 0 && connectStatus == true){
     socket.emit('my room event', { room: 'ensamble', data: 0 + ' ' + 0 + ' ' + 0 + ' ' + 0 + ' ' + 0, counter: counter });
+    stopWatch();
+    console.log('sigue?' + XX);
     }
 }
 
@@ -275,7 +278,7 @@ socket.on('connect', function() {
     $('#conectar').hide();
     if (deviceisReady == true) {
         window.plugins.toast.showShortTop('Conectado', function(a) {
-            console.log('toast success: ' + a)
+            //console.log('toast success: ' + a)
         }, function(b) {
             //alert('toast error: ' + b)
         });
@@ -283,7 +286,7 @@ socket.on('connect', function() {
 });
 socket.on('disconnect', function() {
     window.plugins.toast.showShortTop('Desconectado', function(a) {
-        console.log('toast success: ' + a)
+        //console.log('toast success: ' + a)
     }, function(b) {
         //alert('toast error: ' + b)
     });
@@ -306,7 +309,7 @@ socket.on('joinroom', function(val) {
 socket.on('ensamble', function(msg) {
     //$('#log').append('<br>Received: ' + msg.data);
     countmsg++;
-    updateBalls(XX, YY, ZZ);
+    //updateBalls(XX, YY, ZZ);
     //console.log('data XYZ: ' + JSON.stringify(msg.data));
     //console.log('sid' + JSON.stringify(msg.sid));
     if (mysid != msg.sid) {
@@ -343,7 +346,7 @@ socket.on('ensamble', function(msg) {
         }
         alldataballs = item.msgdata;
         alldataballs = alldataballs.split(' ');
-        otherBalls(alldataballs[0], alldataballs[1]);
+        //otherBalls(alldataballs[0], alldataballs[1]);
         //put a ball with name and move it:
 
     }
@@ -377,7 +380,7 @@ function animate() {
 // });
 
 $('#conectar').click(function() {
-    console.log('tap on conectar!!');
+    //console.log('tap on conectar!!');
     getCurrentSSID();
     socket.connect();
     socket.emit('join', { room: 'ensamble' });
@@ -387,7 +390,7 @@ $('#conectar').click(function() {
 function win(e) {
     var config = WifiWizard.formatWPAConfig("Ensamble", "Ensamble123");
     if (e) {
-        console.log("Wifi enabled already");
+        //console.log("Wifi enabled already");
         
         WifiWizard.addNetwork(config, function() {
             WifiWizard.connectNetwork("Ensamble");
