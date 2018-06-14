@@ -1,5 +1,5 @@
-#N canvas 214 51 1151 682 12;
-#X obj 20 20 cnv 15 103 152 empty empty empty 20 12 0 14 -4032 -66577
+#N canvas 214 28 1151 660 12;
+#X obj 20 20 cnv 15 151 152 empty empty empty 20 12 0 14 -4032 -66577
 0;
 #X obj 386 219 +~;
 #X obj 428 219 +~;
@@ -24,7 +24,7 @@
 #X obj 472 453 delwrite~ \$0-loop-del3 86.7545;
 #X obj 430 476 delwrite~ \$0-loop-del2 71.9345;
 #X obj 385 498 delwrite~ \$0-loop-del1 60;
-#X obj 54 110 hsl 40 10 0 1 0 0 \$0-fromlength \$0-tolength length
+#X obj 32 110 hsl 120 25 0 1 0 0 \$0-fromlength \$0-tolength length
 -2 -5 1 8 -258113 -1 -1 0 1;
 #X obj 567 347 * 0.5;
 #X obj 567 319 r \$0-fromlength;
@@ -60,13 +60,13 @@
 #X obj 325 643 outlet~;
 #X obj 354 587 *~;
 #X obj 333 613 +~;
-#X obj 54 147 hsl 40 12 0 1 0 0 \$0-frommix \$0-tomix mix -2 -5 1 8
--258113 -1 -1 0 1;
-#X text 28 33 Reverb Simple;
-#X obj 64 73 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144 -1
+#X obj 32 139 hsl 120 25 0 1 0 0 \$0-frommix \$0-tomix mix -2 -5 1
+8 -258113 -1 -1 0 1;
+#X text 51 25 Reverb Simple;
+#X obj 77 71 bng 34 250 50 0 empty empty empty 17 7 0 10 -262144 -1
 -1;
-#X text 44 53 On / Off;
-#X obj 520 44 tgl 15 0 empty empty empty 17 7 0 10 -262144 -1 -1 1
+#X text 64 48 On / Off;
+#X obj 520 44 tgl 15 0 empty empty empty 17 7 0 10 -262144 -1 -1 0
 1;
 #X obj 580 46 sel 1;
 #X obj 580 92 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144 -1
@@ -169,4 +169,4 @@
 #X connect 72 0 56 0;
 #X connect 72 0 3 0;
 #X connect 73 0 68 0;
-#X coords 0 -1 1 1 103 152 1 20 20;
+#X coords 0 -1 1 1 152 155 1 20 20;
