@@ -118,12 +118,102 @@ function onError() {
 }
 
 function init() {
+    container = document.createElement('div');
+    $('.container').append(container);
+    //document.body.appendChild(container);
+    camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 1, 3000);
+    //camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+    //camera.position.z = 1000;
+    scene = new THREE.Scene();
+    var PI2 = Math.PI * 2;
+    program = function(context) {
+        context.beginPath();
+        context.arc(0, 0, 0.5, 0, PI2, true);
+        context.fill();
+    };
+    group = new THREE.Group();
+    scene.add(group);
+    for (var i = 0; i < 50; i++) {
+        //console.log('creating balls!');
+        material = new THREE.SpriteCanvasMaterial({
+            color: Math.random() * 0x808008 + 0x808080,
+            sort: true,
+            program: program
+        });
+        particle = new THREE.Sprite(material);
+        particle.position.x = Math.random() * 2000 - 1000;
+        particle.position.y = Math.random() * 2000 - 1000;
+        particle.position.z = Math.random() * 2000 - 1000;
+        particle.scale.x = particle.scale.y = Math.random() * 20 + 10;
+        group.add(particle);
+    }
+    renderer = new THREE.CanvasRenderer();
+    renderer.setPixelRatio(window.devicePixelRatio);
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    container.appendChild(renderer.domElement);
     //stats = new Stats();
     //container.appendChild(stats.dom);
     document.addEventListener('touchstart', onDocumentTouchStart, false);
     document.addEventListener('touchmove', onDocumentTouchMove, false);
     document.addEventListener('touchend', onDocumentTouchEnd, false);
     //window.addEventListener("deviceorientation", ondevicemotion, false);
+}
+
+function updateBalls(valX, valY, valZ) {
+    if (countmsg < 2) {
+        //console.log('balls added!');
+        var PI2 = Math.PI * 2;
+        program = function(context) {
+            context.beginPath();
+            context.arc(0, 0, 0.5, 0, PI2, true);
+            context.fill();
+        };
+        material = new THREE.SpriteCanvasMaterial({
+            color: Math.random() * 0x808008 + 0x808080,
+            program: program
+        });
+        particle = new THREE.Sprite(material);
+        particle.position.x = valX * 2000 - 500;
+        particle.position.y = valY * 2000 - 500;
+        particle.position.z = Math.random() * 2000 - 500;
+        particle.scale.x = particle.scale.y = Math.random() * 20 + 10;
+        group.add(particle);
+    } else {
+        //moveBalls(valX, valY, valZ);
+    }
+}
+
+function moveBalls(valX, valY, valZ) {
+    group.scale.x = valX;
+    group.scale.y = valY;
+}
+
+function otherBalls(valX, valY, valZ) {
+    console.log('data for ballsX:' + valX);
+    console.log('data for ballsY:' + valY);
+    // camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+    // scene = new THREE.Scene();
+    // // Create a circle around the mouse and move it
+    // // The sphere has opacity 0
+    // var mouseGeometry = new THREE.SphereGeometry(1, 0, 0);
+    // var mouseMaterial = new THREE.MeshBasicMaterial({
+    //     color: 0x0000ff
+    // });
+    // mouseMesh = new THREE.Mesh(mouseGeometry, mouseMaterial);
+    // mouseMesh.position.z = -5;
+    // scene.add(mouseMesh);
+    // // Make the sphere follow the mouse
+    // var vector = new THREE.Vector3(valX, valY, 0.5);
+    // vector.unproject(camera);
+    // var dir = vector.sub(camera.position).normalize();
+    // var distance = -camera.position.z / dir.z;
+    // var pos = camera.position.clone().add(dir.multiplyScalar(distance));
+    // mouseMesh.position.copy(pos);
+    // particle.position.x = valX * 2000 - 500;
+    // particle.position.y = valY * 2000 - 500;
+    // particle.position.z = Math.random() * 2000 - 500;
+    // particle.scale.x = particle.scale.y = Math.random() * 200 + 100;
+    // group.add(particle);
 }
 
 function onDocumentTouchStart(event) {
@@ -151,7 +241,7 @@ function onDocumentTouchEnd(event){
     if (event.touches.length === 0 && connectStatus == true){
     socket.emit('my room event', { room: 'ensamble', data: 0 + ' ' + 0 + ' ' + 0 + ' ' + 0 + ' ' + 0, counter: counter });
     stopWatch();
-    //console.log('sigue?' + XX);
+    console.log('sigue?' + XX);
     }
 }
 
@@ -161,6 +251,20 @@ function onDocumentTouchEnd(event){
 //         accZ = event.accelerationIncludingGravity.z;
 //     }
 //
+
+function render() {
+    renderer.autoClear = false;
+    renderer.clear();
+    //camera.position.set(0, 0, 5);
+    // camera.position.x += (Math.round(XX) - camera.position.x) * 0.05;
+    // camera.position.y += (-Math.round(YY) - camera.position.y) * 0.05;
+    camera.lookAt(scene.position);
+    group.rotation.x += XX / 1000;
+    group.rotation.y += YY / 1000;
+    group.position.x += XX / 500;
+    group.position.y += YY / 500;
+    renderer.render(scene, camera);
+}
 
 //console.log('accX:' + accX);
 
@@ -248,8 +352,23 @@ socket.on('ensamble', function(msg) {
     }
 
 });
-
+// $('#conectar').on('click', function(event) {
+//     socket.emit('join', { room: 'ensamble' });
+// });
+// $('#hola').on('click', function(event) {
+//     socket.emit('join', { room: 'ensamble' });
+//     startWatch();
+// });
 init();
+animate();
+//startWatch();
+
+function animate() {
+    requestAnimationFrame(animate);
+    render();
+    //stats.update();
+}
+
 // $(document).ready(function() {
 // $('#conectar').click(function() {
 //     try {
