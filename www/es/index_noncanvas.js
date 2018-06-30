@@ -1,4 +1,5 @@
-var mouseX = 0,
+var container, stats, camera, scene, renderer, group, particle = [],
+    mouseX = 0,
     mouseY = 0,
     windowHalfX = window.innerWidth / 2,
     windowHalfY = window.innerHeight / 2,
@@ -34,7 +35,7 @@ function setCounter(val) {
 }
 var app = {
     // Application Constructor
-    initialize: function () {
+    initialize: function() {
         document.addEventListener('deviceready', this.onDeviceReady.bind(this), false);
         document.addEventListener("backbutton", onBackKeyDown, false);
         document.addEventListener("menubutton", onMenuKeyDown, false);
@@ -45,7 +46,7 @@ var app = {
     //
     // Bind any cordova events here. Common events are:
     // 'pause', 'resume', etc.
-    onDeviceReady: function () {
+    onDeviceReady: function() {
         this.receivedEvent('deviceready');
         console.log('device is ready');
         getCurrentSSID();
@@ -55,7 +56,7 @@ var app = {
     },
 
     // Update DOM on a Received Event
-    receivedEvent: function (id) {
+    receivedEvent: function(id) {
         // var parentElement = document.getElementById(id);
         //var listeningElement = parentElement.querySelector('.listening');
         //var receivedElement = parentElement.querySelector('.received');
@@ -146,11 +147,11 @@ function onDocumentTouchMove(event) {
         //updateBalls(mouseX, mouseY, XX, YY, ZZ);
     }
 }
-function onDocumentTouchEnd(event) {
-    if (event.touches.length === 0 && connectStatus == true) {
-        socket.emit('my room event', { room: 'ensamble', data: 0 + ' ' + 0 + ' ' + 0 + ' ' + 0 + ' ' + 0, counter: counter });
-        stopWatch();
-        //console.log('sigue?' + XX);
+function onDocumentTouchEnd(event){
+    if (event.touches.length === 0 && connectStatus == true){
+    socket.emit('my room event', { room: 'ensamble', data: 0 + ' ' + 0 + ' ' + 0 + ' ' + 0 + ' ' + 0, counter: counter });
+    stopWatch();
+    //console.log('sigue?' + XX);
     }
 }
 
@@ -167,41 +168,41 @@ function onDocumentTouchEnd(event) {
 var namespace = '/test';
 var socket = io.connect('http://192.168.0.1:5000' + namespace);
 
-socket.on('connect', function () {
+socket.on('connect', function() {
     socket.emit('my event', { data: 'I\'m connected!' });
     connectStatus = true;
     $('#conectar').hide();
     if (deviceisReady == true) {
-        window.plugins.toast.showShortTop('Conectado', function (a) {
+        window.plugins.toast.showShortTop('Conectado', function(a) {
             //console.log('toast success: ' + a)
-        }, function (b) {
+        }, function(b) {
             //alert('toast error: ' + b)
         });
     }
 });
-socket.on('disconnect', function () {
-    window.plugins.toast.showShortTop('Desconectado', function (a) {
+socket.on('disconnect', function() {
+    window.plugins.toast.showShortTop('Desconectado', function(a) {
         //console.log('toast success: ' + a)
-    }, function (b) {
+    }, function(b) {
         //alert('toast error: ' + b)
     });
     $('#conectar').show();
     //$('#log').append('<br>Disconnected');
 });
-socket.on('my response', function (msg) {
+socket.on('my response', function(msg) {
     // $('#log').append('<br>Received: ' + msg.data);
     //console.log('countmsg: ' + countmsg);
 
 });
-socket.on('my response count', function (msg) {
+socket.on('my response count', function(msg) {
     //$('#log').append('<br>Received: ' + msg.data + msg.count);
     setCounter(msg.count);
 });
-socket.on('joinroom', function (val) {
+socket.on('joinroom', function(val) {
     //console.log('sid: ' + JSON.stringify(val.sid));
     mysid = val.sid;
 });
-socket.on('ensamble', function (msg) {
+socket.on('ensamble', function(msg) {
     //$('#log').append('<br>Received: ' + msg.data);
     countmsg++;
     //updateBalls(XX, YY, ZZ);
@@ -259,7 +260,7 @@ init();
 
 // });
 
-$('#conectar').click(function () {
+$('#conectar').click(function() {
     //console.log('tap on conectar!!');
     getCurrentSSID();
     socket.connect();
@@ -271,14 +272,14 @@ function win(e) {
     var config = WifiWizard.formatWPAConfig("Ensamble", "Ensamble123");
     if (e) {
         //console.log("Wifi enabled already");
-
-        WifiWizard.addNetwork(config, function () {
+        
+        WifiWizard.addNetwork(config, function() {
             WifiWizard.connectNetwork("Ensamble");
 
         });
     } else {
         WifiWizard.setWifiEnabled(true, winEnable, failEnable);
-        WifiWizard.addNetwork(config, function () {
+        WifiWizard.addNetwork(config, function() {
             WifiWizard.connectNetwork("Ensamble");
 
         });
@@ -308,9 +309,9 @@ function ssidHandler(s) {
         try {
             WifiWizard.isWifiEnabled(win, fail);
             var config = WifiWizard.formatWPAConfig("Ensamble", "Ensamble123");
-            WifiWizard.addNetwork(config, function () {
+            WifiWizard.addNetwork(config, function() {
                 WifiWizard.connectNetwork("Ensamble");
-
+    
             });
         } catch (err) {
             console.log('Plugin Error -' + err.message);
@@ -327,4 +328,3 @@ function fail(e) {
 function getCurrentSSID() {
     WifiWizard.getCurrentSSID(ssidHandler, fail);
 }
-//new canvas:
